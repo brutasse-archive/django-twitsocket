@@ -1,0 +1,25 @@
+<div id="notice" class="notice" style="display:none;">
+	Your browser doesn't seem to support WebSockets. Install Chromium if you want real-time updates, otherwise use the plain old refresh button.
+</div>
+<div id="closed" class="notice" style="display:none;">
+	Failed to establish a WebSocket connection. Try to refresh the page...
+</div>
+<div id="error" class="notice" style="display:none;">
+	Error with the WebSocket connection. Try to refresh the page...
+</div>
+<div id="tweets">
+	{% for tweet in tweets %}
+	{% with tweet.get_content as j %}
+	<div class="tweet">
+		{% if j.retweeted_status %}
+		<img width="48" height="48" src="{{ j.retweeted_status.user.profile_image_url }}" />
+		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.retweeted_status.user.screen_name }}">{{ j.retweeted_status.user.screen_name }}</a>: {{ j.retweeted_status.text|safe }}</p>
+		{% else %}
+		<img width="48" height="48" src="{{ j.user.profile_image_url }}" />
+		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.user.screen_name }}">{{ j.user.screen_name }}</a>: {{ j.text|safe }}</p>
+		{% endif %}
+	</div>
+	<div class="clear">{% if j.retweeted_status %}<span class="rt">Retweeted by {{ j.user.screen_name }}</span> {% endif %} {{ j.created_at }}</div>
+	{% endwith %}
+	{% endfor %}
+</div>

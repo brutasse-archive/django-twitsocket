@@ -1,0 +1,41 @@
+<script type="text/javascript">
+	var user_url = function(screen_name) {
+		return '<a class="username" target="_blank" href="https://twitter.com/' + screen_name + '">' + screen_name + '</a>';
+	};
+
+	var user_image = function(image_url) {
+		return '<img width="48" height="48" src="' + image_url + '"/>';
+	}
+
+	var insert = function(data){
+		json = $.parseJSON(data);
+		var image = user_image(json.user.profile_image_url);
+		var meta = json.created_at.split(' ').slice(0, -2).join(' ');
+		if (json.retweeted_status) {
+			var image = user_image(json.retweeted_status.user.profile_image_url);
+			var user = user_url(json.retweeted_status.user.screen_name);
+			var text = json.retweeted_status.text;
+			meta = '<span class="rt">Retweeted by ' + json.user.screen_name + '</span>' + meta;
+		} else {
+			var user = user_url(json.user.screen_name);
+			var text = json.text;
+		}
+		var text = '<p>' + user + ': ' + text + '</p>';
+		var content = image + text;
+		$('#tweets').prepend('<div class="tweet" style="display:none;">' + content + '</div><div class="clear">' + meta + '</div>');
+		$('#tweets .tweet:first').fadeIn('slow');
+	};
+
+	if (!window.WebSocket) {
+		$('#notice').css("display", "block");
+	} else {
+		try {
+			var ws = new WebSocket("{{ websocket_server }}/");
+			ws.onmessage = function (e) { insert(e.data); };
+			ws.onclose = function() { $('#closed').css("display", "block"); };
+			ws.onerror = function() { $('#error').css("display", "block"); };
+		} catch (e) {
+			//alert(e);
+		}
+	}
+</script>
