@@ -27,7 +27,7 @@ Installation
 
 ::
 
-    pip install -e git+git://github.com/brutasse/django-twitsocket
+    pip install -e git+git://github.com/brutasse/django-twitsocket#egg=twitsocket
 
 Configuration
 -------------
