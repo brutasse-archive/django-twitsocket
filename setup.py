@@ -15,7 +15,7 @@ setup(
     url='http://github.com/brutasse/django-twitsocket',
     license='BSD',
     description='A twitter wall / live stream for your conference / event / topic of interest, as a Django reusable app.',
-    long_description=open('README.rst').read(),
+    long_description=read('README.rst'),
     zip_safe=False,
 )
 
