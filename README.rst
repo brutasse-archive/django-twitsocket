@@ -16,18 +16,18 @@ Twitsocket has 3 components:
 
 * A tiny Django app to store the tweets in a DB and render them.
 
-Bonus
------
-
-There is a ``lister`` management command which you can use to maintain a
-Twitter list of people tweeting about the subject you're tracking.
-
 Installation
 ------------
 
 ::
 
     pip install -e git+git://github.com/brutasse/django-twitsocket#egg=twitsocket
+
+**Requirements**:
+
+* Python >=2.4
+* Django >= 1.0
+* Jquery >= 1.4 enabled in your templates.
 
 Configuration
 -------------
@@ -51,15 +51,6 @@ settings::
     # The log file tells you when new clients and new tweets arrive.
     LOGFILE = '/path/to/logfile.log'
 
-If you want to use the ``lister`` command, create the list on twitter and add
-it to your settings::
-
-    TWITTER_LIST = 'europython2010'
-
-Running ``manage.py lister`` will add everyone to the list. Run it every once
-a while, Twitter has a rate-limit (and apparently a max. of 500 ppl on a
-list).
-
 Create a view somewhere that renders a template and add this to the content::
 
     {% load twitsocket_tags %}
@@ -67,8 +58,6 @@ Create a view somewhere that renders a template and add this to the content::
     {% render_tweets 30 %}
 
     {% websocket_client %}
-
-You need jquery>=1.4 for the ``websocket_client`` part.
 
 Running the websocket server
 ----------------------------
@@ -79,6 +68,21 @@ Running the websocket server
 
 Ideally, you should put this line in a bash script and run it with supervisord
 to restart it automatically when Twitter cuts the connection.
+
+Bonus
+-----
+
+There is a ``lister`` management command which you can use to maintain a
+Twitter list of people tweeting about the subject you're tracking.
+
+If you want to use the command, create the list on twitter and add it to your
+settings::
+
+    TWITTER_LIST = 'europython2010'
+
+Running ``manage.py lister`` will add everyone to the list. Run it every once
+a while, Twitter has a rate-limit (and apparently a max. of 500 ppl on a
+list).
 
 Styling
 -------
@@ -150,6 +154,8 @@ TODO
 
 * Switch to OAuth for the streaming consumer and the ``lister`` management
   command.
+
+* i18n for websocket error messages.
 
 * Try to decouple the Twitter consumer and the WebSocket server. Maybe with
   Redis and its Pub/Sub mechanism.
