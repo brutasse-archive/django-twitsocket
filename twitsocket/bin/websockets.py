@@ -57,7 +57,7 @@ class StreamClient(asyncore.dispatcher):
 
     def handle_close(self):
         self.close()
-        raise ValueError("Connection closed by foreign host")
+        raise ValueError("Connection closed by remote host")
 
     def handle_read(self):
         self.data += self.recv(8192)
@@ -93,18 +93,15 @@ class StreamClient(asyncore.dispatcher):
         self.buffer = self.buffer[sent:]
 
     def handle_json(self, payload):
-        if 'text' in payload:
-            if payload['user']['screen_name'] in BANNED_USERS:
-                return
+        if payload['user']['screen_name'] in BANNED_USERS:
+            return
 
-            payload['text'] = process(payload['text'])
-            if 'retweeted_status' in payload:
-                payload['retweeted_status']['text'] = process(payload['retweeted_status']['text'])
-            dumped = json.dumps(payload)
-            tw = Tweet(status_id=payload['id'], content=dumped).save()
-            self.server.send_to_clients(dumped)
-        else:
-            logger.info("Skipping a status that was not a tweet")
+        payload['text'] = process(payload['text'])
+        if 'retweeted_status' in payload:
+            payload['retweeted_status']['text'] = process(payload['retweeted_status']['text'])
+        dumped = json.dumps(payload)
+        tw = Tweet(status_id=payload['id'], content=dumped).save()
+        self.server.send_to_clients(dumped)
 
 
 class WebSocket(asyncore.dispatcher):
@@ -152,7 +149,7 @@ Sec-WebSocket-Protocol: sample""" + '\r\n\r\n'
                 sock.send(handshake)
 
             elif header.find('\r\n\r\n') != -1:
-                # WebSocket 75
+                # WebSockets 75
                 handshaken = True
                 sock.send(self.handshake_75)
         handler = WebSocketHandler(self, sock)
@@ -175,17 +172,14 @@ Sec-WebSocket-Protocol: sample""" + '\r\n\r\n'
         key_1 = header_dict['Sec-WebSocket-Key1']
         key_2 = header_dict['Sec-WebSocket-Key2']
         key_3 = header_string[-8:]
-        key_number_1 = int(''.join([i for i in key_1 if 47 < ord(i) < 58]))
-        key_number_2 = int(''.join([i for i in key_2 if 47 < ord(i) < 58]))
-        spaces_1 = len([i for i in key_1 if i == ' '])
-        spaces_2 = len([i for i in key_2 if i == ' '])
 
-        part_1 = key_number_1 / spaces_1
-        part_2 = key_number_2 / spaces_2
+        def key_challenge(key):
+            key_number = int(''.join([i for i in key if 47 < ord(i) < 58]))
+            spaces = len([i for i in key if i == ' '])
+            part = key_number / spaces
+            return struct.pack('!I', part)
 
-        challenge = struct.pack('!I', part_1)
-        challenge += struct.pack('!I', part_2)
-        challenge += key_3
+        challenge = key_challenge(key_1) + key_challenge(key_2) + key_3
         return md5.md5(challenge).digest()
 
 
@@ -224,11 +218,16 @@ def main():
     token = base64.encodestring('%s:%s' % (settings.TWITTER_USERNAME,
                                            settings.TWITTER_PASSWORD)).strip()
     host = 'stream.twitter.com'
-    track = 'track=' + '%2C'.join(settings.TRACK_KEYWORDS)
-    users = 'follow=' + '%2C'.join(map(str, settings.TRACK_USERS))
+    track = '%2C'.join(settings.TRACK_KEYWORDS)
+    users = '%2C'.join(map(str, settings.TRACK_USERS))
     if not track and not users:
         raise ValueError("Set at least TRACK_KEYWORDS or TRACK_USERS "
                          "in your settings")
+    if track:
+        track = 'track=%s' % track
+    if users:
+        users = 'follow=%s' % users
+
     body = track
     if body:
         body += '&' + users
