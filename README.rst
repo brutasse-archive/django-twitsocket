@@ -139,11 +139,6 @@ Then add to your ``<head>`` block (assuming you've loaded
         {% flash_hack %}
     </head>
 
-And `follow the instructions here`_ to add a Flash Socket Policy File on port
-843.
-
-.. _follow the instructions here: http://www.lightsphere.com/dev/articles/flash_socket_policy.html
-
 TODO
 ----
 

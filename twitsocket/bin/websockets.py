@@ -25,6 +25,11 @@ logger.setLevel(logging.INFO)
 
 BANNED_USERS = getattr(settings, 'BANNED_USERS', ())
 
+POLICY_FILE = """<?xml version=\"1.0\"?>
+<cross-domain-policy>
+    <allow-access-from domain="*" to-ports= "*" />
+</cross-domain-policy>"""
+
 
 def twitterfy(tweet):
     # FIXME highlights every other word when there are many...
@@ -141,6 +146,11 @@ Sec-WebSocket-Protocol: sample""" + '\r\n\r\n'
         header = ''
         while handshaken == False:
             header += sock.recv(8192)
+
+            if header.startswith('<policy-file-request/>'):
+                sock.send(POLICY_FILE)
+                sock.close()
+                return
 
             if len(header) - header.find('\r\n\r\n') == 12:
                 # WebSockets 76
