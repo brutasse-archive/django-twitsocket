@@ -104,19 +104,14 @@ fit your needs)::
       background-color: #fff;  border: 1px solid #bbb;
       padding: 3px;            margin-right: 10px;
     }
-    #tweets .tweet p {
-      margin: 0;               padding: 0;
-      float: left;             width: 500px;
-    }
+    #tweets .tweet p { margin: 0; padding: 0; float: left; width: 500px; }
     #tweets .clear {
       clear: both;             border-bottom: 1px solid #ccc;
       margin-bottom: 10px;     padding-bottom: 10px;
       font-size: 0.8em;        color: #aaa;
       text-align: right;       text-shadow: 0 1px 0 #fff;
     }
-    #tweets .rt {
-      color: #d01f3c;   font-weight: bold;     padding-right: 15px;
-    }
+    #tweets .rt { color: #d01f3c; font-weight: bold; padding-right: 15px; }
     .notice {
       width: 610px;            text-shadow: 0 1px 0 #fff;
       margin: 10px auto;       background-color: #FFFFaa;
