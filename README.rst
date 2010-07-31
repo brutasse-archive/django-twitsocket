@@ -27,16 +27,23 @@ Installation
 
 * Python >=2.4
 * Django >= 1.0
+* python-oauth2
 * Jquery >= 1.4 enabled in your templates.
 
 Configuration
 -------------
 
+You need to register an OAuth consumer on twitter.com (read AND write if you
+want to maintain the Twitter list) and get a token for it.
+
 Add ``twitsocket`` to your ``INSTALLED_APPS``, run ``syncdb`` and add a few
 settings::
 
-    TWITTER_USERNAME = 'yourtwitterusername'
-    TWITTER_PASSWORD = 'yourtwitterpassword'
+    CONSUMER_SECRET = 'your consumer secret'
+    CONSUMER_KEY = 'your consumer key'
+
+    TOKEN_SECRET = 'your token secret'
+    TOKEN_KEY = 'your token key'
 
     # Optional, in case of spam
     BANNED_USERS = ('list', 'of', 'banned', 'users')
@@ -76,9 +83,9 @@ There is a ``lister`` management command which you can use to maintain a
 Twitter list of people tweeting about the subject you're tracking.
 
 If you want to use the command, create the list on twitter and add it to your
-settings::
+settings (prepend you twitter username)::
 
-    TWITTER_LIST = 'europython2010'
+    TWITTER_LIST = 'brutasse/europython2010'
 
 Running ``manage.py lister`` will add everyone to the list. Run it every once
 a while, Twitter has a rate-limit (and apparently a max. of 500 ppl on a
@@ -141,9 +148,6 @@ Then add to your ``<head>`` block (assuming you've loaded
 
 TODO
 ----
-
-* Switch to OAuth for the streaming consumer and the ``lister`` management
-  command.
 
 * i18n for websocket error messages.
 
