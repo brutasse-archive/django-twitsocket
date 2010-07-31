@@ -1,14 +1,16 @@
 import asyncore
-import base64
 import logging
+import md5
 import re
 import socket
 import struct
-import md5
+import time
 
 from django.conf import settings
 from django.utils import simplejson as json
 from django.utils.html import urlize
+
+import oauth2 as oauth
 
 from twitsocket.models import Tweet
 
@@ -29,6 +31,22 @@ POLICY_FILE = """<?xml version=\"1.0\"?>
 <cross-domain-policy>
     <allow-access-from domain="*" to-ports= "*" />
 </cross-domain-policy>"""
+
+
+def get_oauth_request(url, consumer, token, extra_params):
+    oparams = {
+        'oauth_version': '1.0',
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key,
+    }
+    oparams.update(extra_params)
+
+    req = oauth.Request(method="POST", url=url, parameters=oparams)
+    signature_method = oauth.SignatureMethod_HMAC_SHA1()
+    req.sign_request(signature_method, consumer, token)
+    return req
 
 
 def twitterfy(tweet):
@@ -223,32 +241,46 @@ class WebSocketHandler(asyncore.dispatcher):
         self.close()
 
 
+def dict_to_postdata(data_dict):
+    body = ''
+    for key, value in data_dict.items():
+        data = '%s=%s' % (key, value)
+        if body:
+            body += '&' + data
+        else:
+            body = data
+    return body
+
+
 def main():
-    # FIXME switch to OAuth
-    token = base64.encodestring('%s:%s' % (settings.TWITTER_USERNAME,
-                                           settings.TWITTER_PASSWORD)).strip()
-    host = 'stream.twitter.com'
-    track = '%2C'.join(settings.TRACK_KEYWORDS)
-    users = '%2C'.join(map(str, settings.TRACK_USERS))
-    if not track and not users:
+    keywords = getattr(settings, 'TRACK_KEYWORDS', ())
+    user_ids = map(str, getattr(settings, 'TRACK_USERS', ()))
+    if not keywords and not user_ids:
         raise ValueError("Set at least TRACK_KEYWORDS or TRACK_USERS "
                          "in your settings")
-    if track:
-        track = 'track=%s' % track
-    if users:
-        users = 'follow=%s' % users
+    post_params = {}
+    if keywords:
+        post_params['track'] = ','.join(keywords)
+    if user_ids:
+        post_params['follow'] = ','.join(user_ids)
 
-    body = track
-    if body:
-        body += '&' + users
-    else:
-        body = users
+    body = dict_to_postdata(post_params)
+
+    token = oauth.Token(secret=settings.TOKEN_SECRET,
+                        key=settings.TOKEN_KEY)
+    consumer = oauth.Consumer(secret=settings.CONSUMER_SECRET,
+                              key=settings.CONSUMER_KEY)
+    host = 'stream.twitter.com'
+    path = '/1/statuses/filter.json'
+    url = 'http://%s%s' % (host, path)
+    request = get_oauth_request(url, consumer, token, post_params)
+
     headers = [
-        'POST /1/statuses/filter.json HTTP/1.1',
+        'POST %s HTTP/1.1' % path,
         'Host: %s' % host,
+        'Authorization: %s' % request.to_header()['Authorization'],
         'Content-Type: application/x-www-form-urlencoded',
         'Content-Length: %s' % len(body),
-        'Authorization: Basic %s' % token,
     ]
 
     websocket_server = WebSocket(settings.WEB_SERVER,
