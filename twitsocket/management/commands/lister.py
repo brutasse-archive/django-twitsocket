@@ -6,18 +6,37 @@ from django.conf import settings
 from django.core.management.base import NoArgsCommand
 from django.utils import simplejson as json
 
-from tweets.models import Tweet
+import oauth2 as oauth
 
-params = (settings.TWITTER_USERNAME, settings.TWITTER_LIST)
-LIST_MEMBERS = 'https://api.twitter.com/1/%s/%s/members.json' % params
+from twitsocket.models import Tweet
 
-password_manager = urllib2.HTTPPasswordMgrWithDefaultRealm()
-password_manager.add_password(None, LIST_MEMBERS,
-                              settings.TWITTER_USERNAME,
-                              settings.TWITTER_PASSWORD)
-handler = urllib2.HTTPBasicAuthHandler(password_manager)
-opener = urllib2.build_opener(handler)
-urllib2.install_opener(opener)
+LIST_MEMBERS = 'https://api.twitter.com/1/%s/members.json' % settings.TWITTER_LIST
+
+def oauth_request(url, method='GET', params={}, data=None):
+    qs = ''
+    if method == 'GET':
+        qs = '&'.join(['%s=%s' % (key, value) for key, value in params.items()])
+    if qs:
+        url += '?%s' % qs
+    consumer = oauth.Consumer(secret=settings.CONSUMER_SECRET,
+                              key=settings.CONSUMER_KEY)
+    token = oauth.Token(secret=settings.TOKEN_SECRET,
+                        key=settings.TOKEN_KEY)
+    oparams = {
+        'oauth_version': '1.0',
+        'oauth_nonce': oauth.generate_nonce(),
+        'oauth_timestamp': int(time.time()),
+        'oauth_token': token.key,
+        'oauth_consumer_key': consumer.key,
+    }
+    if method == 'POST':
+        oparams.update(params)
+    req = oauth.Request(method=method, url=url, parameters=oparams)
+    signature_method = oauth.SignatureMethod_HMAC_SHA1()
+    req.sign_request(signature_method, consumer, token)
+    if method == 'POST':
+        return urllib2.Request(url, data, headers=req.to_header())
+    return urllib2.Request(url, headers=req.to_header())
 
 
 class Command(NoArgsCommand):
@@ -37,7 +56,9 @@ class Command(NoArgsCommand):
         members = []
         cursor = -1
         while more_pages:
-            data = urllib2.urlopen(LIST_MEMBERS + '?cursor=%s' % cursor).read()
+            request = oauth_request(LIST_MEMBERS, params={'cursor': cursor})
+            data = urllib2.urlopen(request).read()
+
             payload = json.loads(data)
             cursor = payload['next_cursor']
             for user in payload['users']:
@@ -55,4 +76,6 @@ class Command(NoArgsCommand):
 
     def add_to_list(self, user_id):
         data = urllib.urlencode({'id': user_id})
-        response = opener.open(LIST_MEMBERS, data)
+        request = oauth_request(LIST_MEMBERS, method='POST',
+                                params={'id': user_id}, data=data)
+        response = urllib2.urlopen(request).read()
