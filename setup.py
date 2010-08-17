@@ -9,7 +9,7 @@ def read(fname):
 setup(
     name='django-twitsocket',
     version='0.1',
-    author=u'Bruno Renié, Gautier Hayoun',
+    author=u'Bruno Renie, Gautier Hayoun',
     author_email='bruno@renie.fr',
     packages=find_packages(),
     include_package_data=True,
