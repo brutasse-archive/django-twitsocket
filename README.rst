@@ -146,6 +146,10 @@ Then add to your ``<head>`` block (assuming you've loaded
         {% flash_hack %}
     </head>
 
+Note that because of some cross-domain security concerns, the flash hack will
+only if the media files are served on the same domain name as the website
+itself. No media.example.com for serving static files.
+
 TODO
 ----
 
