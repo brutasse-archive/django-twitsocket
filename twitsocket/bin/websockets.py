@@ -9,7 +9,6 @@ import time
 
 from django.conf import settings
 from django.utils import simplejson as json
-from django.utils.html import urlize
 
 import oauth2 as oauth
 
@@ -48,21 +47,6 @@ def get_oauth_request(url, consumer, token, extra_params):
     signature_method = oauth.SignatureMethod_HMAC_SHA1()
     req.sign_request(signature_method, consumer, token)
     return req
-
-
-def twitterfy(tweet):
-    # FIXME highlights every other word when there are many...
-    link = r'\g<start> <a target="_blank" href="http://search.twitter.com/search?q=\g<hashtag>"  title="#\g<hashtag> on Twitter">#\g<hashtag></a>\g<end>'
-    tweet = HASH_RE.sub(link, tweet)
-    link = r'<a target="_blank" href="http://search.twitter.com/search?q=\g<hashtag>" title="#\g<hashtag> on Twitter">#\g<hashtag></a>\g<end>'
-    tweet = HASH_RE2.sub(link, tweet)
-
-    link = r'\g<start><a target="_blank" href="https://twitter.com/\g<user>" title="@\g<user> on Twitter">@\g<user></a>\g<end>'
-    return USERNAME_RE.sub(link, tweet)
-
-
-def process(tweet):
-    return urlize(twitterfy(tweet))
 
 
 class StreamClient(asyncore.dispatcher):
@@ -125,9 +109,6 @@ class StreamClient(asyncore.dispatcher):
         dt = dt + datetime.timedelta(hours=1)
         payload['created_at'] = dt.strftime('%a %b %d %H:%M:%S +0100 %Y')
 
-        payload['text'] = process(payload['text'])
-        if 'retweeted_status' in payload:
-            payload['retweeted_status']['text'] = process(payload['retweeted_status']['text'])
         dumped = json.dumps(payload)
         tw = Tweet(status_id=payload['id'], content=dumped).save()
         self.server.send_to_clients(dumped)

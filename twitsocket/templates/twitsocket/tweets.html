@@ -13,10 +13,10 @@
 	<div class="tweet">
 		{% if j.retweeted_status %}
 		<img width="48" height="48" src="{{ j.retweeted_status.user.profile_image_url }}" />
-		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.retweeted_status.user.screen_name }}">{{ j.retweeted_status.user.screen_name }}</a>: {{ j.retweeted_status.text|safe }}</p>
+		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.retweeted_status.user.screen_name }}">{{ j.retweeted_status.user.screen_name }}</a>: <span>{{ j.retweeted_status.text|safe }}</span></p>
 		{% else %}
 		<img width="48" height="48" src="{{ j.user.profile_image_url }}" />
-		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.user.screen_name }}">{{ j.user.screen_name }}</a>: {{ j.text|safe }}</p>
+		<p><a class="username" target="_blank" href="https://twitter.com/{{ j.user.screen_name }}">{{ j.user.screen_name }}</a>: <span>{{ j.text|safe }}</span></p>
 		{% endif %}
 	</div>
 	<div class="clear">{% if j.retweeted_status %}<span class="rt">Retweeted by {{ j.user.screen_name }}</span> {% endif %} {{ j.created_at }}</div>

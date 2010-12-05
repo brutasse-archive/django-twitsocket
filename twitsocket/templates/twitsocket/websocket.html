@@ -3,6 +3,14 @@
 		return '<a class="username" target="_blank" href="https://twitter.com/' + screen_name + '">' + screen_name + '</a>';
 	};
 
+	var twiterfy = function(tweet) {
+		tweet = tweet.replace(/(^|\s)@(\w+)/g, '$1<a target="_blank" href="https://twitter.com/$2">@$2</a>');
+		tweet = tweet.replace(/(^|\s+)(https*\:\/\/\S+[^\.\s+])/g, function(m, m1, link) {
+        return ((m1 != '') ? ' ' : '') + '<a target="blank" href=' + link + '>' + ((link.length > 25) ? link.substr(0, 24) + '...' : link) + '</a>';
+});
+		return tweet.replace(/(^|\s)(#\w+)/g, '$1#<a target="_blank" href="http://search.twitter.com/search?q=%23$2">$2</a>');
+	};
+
 	var user_image = function(image_url) {
 		return '<img width="48" height="48" src="' + image_url + '"/>';
 	}
@@ -14,17 +22,21 @@
 		if (json.retweeted_status) {
 			var image = user_image(json.retweeted_status.user.profile_image_url);
 			var user = user_url(json.retweeted_status.user.screen_name);
-			var text = json.retweeted_status.text;
+			var text = twiterfy(json.retweeted_status.text);
 			meta = '<span class="rt">Retweeted by ' + json.user.screen_name + '</span>' + meta;
 		} else {
 			var user = user_url(json.user.screen_name);
-			var text = json.text;
+			var text = twiterfy(json.text);
 		}
-		var text = '<p>' + user + ': ' + text + '</p>';
+		var text = '<p>' + user + ': <span>' + text + '</span></p>';
 		var content = image + text;
 		$('#tweets').prepend('<div class="tweet" style="display:none;">' + content + '</div><div class="clear">' + meta + '</div>');
 		$('#tweets .tweet:first').fadeIn('slow');
 	};
+
+	$.each($('.tweet span'), function() {
+		$(this).html(twiterfy($(this).html()));
+	});
 
 	if (!window.WebSocket) {
 		$('#notice').css("display", "block");
