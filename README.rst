@@ -21,7 +21,7 @@ Installation
 
 ::
 
-    pip install -e git+git://github.com/brutasse/django-twitsocket#egg=twitsocket
+    pip install https://github.com/brutasse/django-twitsocket/tarball/master
 
 **Requirements**:
 
