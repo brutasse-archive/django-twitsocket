@@ -1,7 +1,7 @@
-{% for t in top_users %}
+<div id="top_users">{% for t in top_users %}
 	<p style="background: url('{{ t.profile_picture }}') no-repeat; padding: 0 0 0 58px;">
 		<a target="_blank" class="username" href="https://twitter.com/{{ t.username }}">{{ t.username }}</a>
 		<br />
 		<span class="top_user">{{ t.total_count }}</span> tweets
 	</p>
-{% endfor %}
+{% endfor %}</div>
