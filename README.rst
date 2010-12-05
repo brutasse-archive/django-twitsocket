@@ -66,6 +66,29 @@ Create a view somewhere that renders a template and add this to the content::
 
     {% websocket_client %}
 
+Extra template tags
+-------------------
+
+The following template tags are available. They are not required but may be
+used to display extra information about the stream.
+
+* **count**: ``{% count %}`` will output the number of tweets saved in the
+  database. The counter is automatically incremented when new tweets are
+  received.
+
+* **top_users**: ``{% top_users <num> %}`` will display the top ``<num>``
+  users, people who are tweeting the most about the topic.
+
+* **top_tweets**: ``{% top_tweets <num> %}`` will display the top ``<num>``
+  tweets, ordered by number of retweets.
+
+.. note::
+
+    For the ``top_users`` and ``top_tweets`` tags, you need to run the
+    ``top_tweets`` management command every once a while to refreshed the
+    cached values. It's up to you to decide on the frequency since the
+    operation can be rather intensive with a large number of tweets.
+
 Running the websocket server
 ----------------------------
 

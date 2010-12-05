@@ -16,6 +16,9 @@
 	}
 
 	var insert = function(data){
+		var counter = $('span#tweet_count');
+		console.log(counter);
+		counter.text(parseInt(counter.text()) + 1);
 		json = $.parseJSON(data);
 		var image = user_image(json.user.profile_image_url);
 		var meta = json.created_at.split(' ').slice(0, -2).join(' ');
@@ -35,6 +38,9 @@
 	};
 
 	$.each($('.tweet span'), function() {
+		$(this).html(twiterfy($(this).html()));
+	});
+	$.each($('#top_tweets span'), function() {
 		$(this).html(twiterfy($(this).html()));
 	});
 

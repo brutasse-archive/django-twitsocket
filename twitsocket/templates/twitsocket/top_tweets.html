@@ -1,0 +1,9 @@
+<div id="top_tweets">{% for t in top_tweets %}
+	{% with t.get_content.retweeted_status as rt %}
+		<p style="background: url('{{ rt.user.profile_image_url }}') no-repeat; padding: 0 0 0 58px;">
+			<a target="_blank" class="username" href="https://twitter.com/{{ rt.user.screen_name }}">{{ rt.user.screen_name }}</a>: <span>{{ rt.text|safe }}</span>
+			<br />
+			<span class="top_user">{{ t.rt_count }}</span> retweets
+		</p>
+	{% endwith %}
+{% endfor %}</div>
