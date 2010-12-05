@@ -69,7 +69,10 @@ class Command(NoArgsCommand):
     def get_users(self, queryset):
         users = []
         for tweet in queryset:
-            user_id = tweet.get_content()['user']['id']
+            content = tweet.get_content()
+            if 'retweeted_status' in content:
+                continue
+            user_id = content['user']['id']
             if user_id not in users:
                 users.append(user_id)
         return users
