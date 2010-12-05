@@ -1,5 +1,6 @@
 import asyncore
 import logging
+import datetime
 import md5
 import re
 import socket
@@ -118,6 +119,11 @@ class StreamClient(asyncore.dispatcher):
     def handle_json(self, payload):
         if payload['user']['screen_name'] in BANNED_USERS:
             return
+
+        dt = datetime.datetime.strptime(payload['created_at'],
+                                        '%a %b %d %H:%M:%S +0000 %Y')
+        dt = dt + datetime.timedelta(hours=1)
+        payload['created_at'] = dt.strftime('%a %b %d %H:%M:%S +0100 %Y')
 
         payload['text'] = process(payload['text'])
         if 'retweeted_status' in payload:
