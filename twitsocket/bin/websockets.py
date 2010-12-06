@@ -68,7 +68,9 @@ class StreamClient(asyncore.dispatcher):
         raise ValueError("Connection closed by remote host")
 
     def handle_read(self):
-        self.data += self.recv(8192)
+        buf = self.recv(8192)
+        logger.info('Twitter: %s bytes' % len(buf))
+        self.data += buf
         if not self.data.endswith('\r\n\r\n'):
             return
 
