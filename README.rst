@@ -34,7 +34,10 @@ Configuration
 -------------
 
 You need to register an OAuth consumer on twitter.com (read AND write if you
-want to maintain the Twitter list) and get a token for it.
+want to maintain the Twitter list) and get a token for it (using ``tweepy``
+and `this script`_ for instance).
+
+.. _this script: https://gist.github.com/545143
 
 Add ``twitsocket`` to your ``INSTALLED_APPS``, run ``syncdb`` and add a few
 settings::
