@@ -114,9 +114,9 @@ settings (prepend you twitter username)::
     TWITTER_LIST = 'brutasse/europython2010'
 
 Running ``manage.py lister`` will add everyone to the list. Run it every once
-a while, Twitter has a rate-limit (and apparently a max. of 500 ppl on a
-list). Note that only people who send an 'original' tweet (not a retweet) will
-appear on the list.
+a while, Twitter has a rate-limit (and a max. of 500 ppl on a list). Note that
+only people who send an 'original' tweet (not a retweet) will appear on the
+list.
 
 Styling
 -------
