@@ -37,3 +37,8 @@ def top_users(count):
 @register.inclusion_tag('twitsocket/count.html')
 def count():
     return {'count': Tweet.objects.count()}
+
+
+@register.inclusion_tag('twitsocket/switch.html')
+def retweet_switch():
+    return {}

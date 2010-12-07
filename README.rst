@@ -85,6 +85,11 @@ used to display extra information about the stream.
 * **top_tweets**: ``{% top_tweets <num> %}`` will display the top ``<num>``
   tweets, ordered by number of retweets.
 
+* **retweet_switch**: ``{% retweet_switch %}`` will display a "show retweets" /
+  "hide retweets" button if users want to see only original tweets. The user's
+  preference is stored in the browser's localStorage and restored when the
+  page is reloaded.
+
 .. note::
 
     For the ``top_users`` and ``top_tweets`` tags, you need to run the

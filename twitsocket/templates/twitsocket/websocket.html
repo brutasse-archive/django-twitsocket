@@ -13,9 +13,10 @@
 		return '<img width="48" height="48" src="' + image_url + '"/>';
 	}
 
+	var has_localstorage = 'localStorage' in window && window['localStorage'] !== null;
+
 	var insert = function(data){
 		var counter = $('span#tweet_count');
-		console.log(counter);
 		counter.text(parseInt(counter.text()) + 1);
 		json = $.parseJSON(data);
 		var image = user_image(json.user.profile_image_url);
@@ -31,8 +32,11 @@
 		}
 		var text = '<p>' + user + ': <span>' + text + '</span></p>';
 		var content = image + text;
-		$('#tweets').prepend('<div class="tweet" style="display:none;">' + content + '</div><div class="clear">' + meta + '</div>');
-		$('#tweets .tweet:first').fadeIn('slow');
+		$('#tweets').prepend('<div class="tweet" style="display:none;">' + content + '</div><div class="clear" style="display:none;">' + meta + '</div>');
+		if (!(json.retweeted_status && !window.show_rt)) {
+			$('#tweets .tweet:first').fadeIn('slow');
+			$('#tweets .tweet:first').next().fadeIn('slow');
+		}
 	};
 
 	$.each($('.tweet span'), function() {
@@ -41,6 +45,37 @@
 	$.each($('#top_tweets span'), function() {
 		$(this).html(twiterfy($(this).html()));
 	});
+
+	var hide_rts = function(speed) {
+		$('.rt').parent().prev().slideUp(speed);
+		$('.rt').parent().slideUp(speed);
+		$('#show').show();
+		$('#hide').hide();
+		window.show_rt = false;
+		if (has_localstorage) {
+			localStorage.setItem('show_rt', 'hide');
+		}
+	};
+
+	var show_rts = function(speed) {
+		$('.rt').parent().prev().slideDown(speed);
+		$('.rt').parent().slideDown(speed);
+		$('#show').hide();
+		$('#hide').show();
+		window.show_rt = true;
+		if (has_localstorage) {
+			localStorage.setItem('show_rt', 'show');
+		}
+	};
+
+	window.show_rt = true;
+	if (has_localstorage) {
+		if ('show_rt' in localStorage) {
+			window.show_rt = localStorage.getItem('show_rt') == 'show';
+		}
+	}
+
+	if (!window.show_rt) { hide_rts(0); }
 
 	if (!window.WebSocket) {
 		$('#notice').css("display", "block");
