@@ -2,6 +2,6 @@
 	<p style="background: url('{{ t.profile_picture }}') no-repeat; padding: 0 0 0 58px;">
 		<a target="_blank" class="username" href="https://twitter.com/{{ t.username }}">{{ t.username }}</a>
 		<br />
-		<span class="top_user">{{ t.total_count }}</span> tweets
+		<span class="top_user">{{ t.total_count }}</span> tweet{{ t.total_count|pluralize }}
 	</p>
 {% endfor %}</div>
