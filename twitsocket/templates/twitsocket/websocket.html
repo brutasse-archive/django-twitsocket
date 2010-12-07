@@ -8,7 +8,7 @@
 		tweet = tweet.replace(/(^|\s+)(https*\:\/\/\S+[^\.\s+])/g, function(m, m1, link) {
         return ((m1 != '') ? ' ' : '') + '<a target="_blank" href=' + link + '>' + ((link.length > 25) ? link.substr(0, 24) + '...' : link) + '</a>';
 });
-		return tweet.replace(/(^|\s)(#\w+)/g, '$1#<a target="_blank" href="http://search.twitter.com/search?q=%23$2">$2</a>');
+		return tweet.replace(/(^|\s)#(\w+)/g, '$1 <a target="_blank" href="http://search.twitter.com/search?q=%23$2">#$2</a>');
 	};
 
 	var user_image = function(image_url) {
