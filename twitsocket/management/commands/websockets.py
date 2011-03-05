@@ -8,6 +8,7 @@ import struct
 import time
 
 from django.conf import settings
+from django.core.management.base import NoArgsCommand
 from django.utils import simplejson as json
 
 import oauth2 as oauth
@@ -241,7 +242,7 @@ def dict_to_postdata(data_dict):
     return body
 
 
-def main():
+def all_in_one_handler():
     keywords = getattr(settings, 'TRACK_KEYWORDS', ())
     user_ids = map(str, getattr(settings, 'TRACK_USERS', ()))
     if not keywords and not user_ids:
@@ -278,5 +279,7 @@ def main():
     asyncore.loop()
 
 
-if __name__ == '__main__':
-    main()
+class Command(NoArgsCommand):
+
+    def handle_noargs(self, **options):
+        all_in_one_handler()

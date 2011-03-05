@@ -102,7 +102,7 @@ Running the websocket server
 
 ::
 
-    DJANGO_SETTINGS_MODULE=settings python /path/to/twitsocket/bin/websockets.py
+    ./manage.py websockets
 
 Ideally, you should put this line in a bash script and run it with supervisord
 to restart it automatically when Twitter cuts the connection.
