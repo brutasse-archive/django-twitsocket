@@ -1,5 +1,5 @@
 <div id="top_users">{% for t in top_users %}
-	<p style="background: url('{{ t.profile_picture }}') no-repeat; padding: 0 0 0 58px;">
+	<p style="background: url('{{ t.profile_picture }}') no-repeat; padding: 0 0 0 58px; background-size: 48px 48px;">
 		<a target="_blank" class="username" href="https://twitter.com/{{ t.username }}">{{ t.username }}</a>
 		<br />
 		<span class="top_user">{{ t.total_count }}</span> tweet{{ t.total_count|pluralize }}
