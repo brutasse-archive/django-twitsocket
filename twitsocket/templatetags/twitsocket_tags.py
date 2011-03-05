@@ -19,7 +19,7 @@ def render_tweets(count):
 
 @register.inclusion_tag('twitsocket/flash_hack.html')
 def flash_hack():
-    return {'MEDIA_URL': settings.MEDIA_URL}
+    return {'STATIC_URL': settings.STATIC_URL}
 
 
 @register.inclusion_tag('twitsocket/top_tweets.html')

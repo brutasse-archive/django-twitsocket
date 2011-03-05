@@ -163,11 +163,10 @@ The flash hack
 
 As you may know, not all browsers support WebSockets. They are implemented in
 Safari, Chrome and Firefox 4. There is a clever hack involving Flash that
-implements WebSockets for older browsers. To enable it, copy or symlink the
-media files shipped with ``twitsocket`` under the ``flash`` namespace of your
-``MEDIA_URL``::
-
-    cp -a /path/to/twitsocket/media media/flash
+implements WebSockets for older browsers. To enable it, simply use
+contrib.staticfiles (or django-staticfiles with django 1.2). Add it to your
+``INSTALLED_APPS``, configure ``STATIC_ROOT`` and ``STATIC_URL`` and run
+``manage.py collectstatic``.
 
 Then add to your ``<head>`` block (assuming you've loaded
 ``twitsocket_tags``)::
