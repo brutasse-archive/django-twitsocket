@@ -155,6 +155,11 @@ Sec-WebSocket-Protocol: sample""" + '\r\n\r\n'
         while handshaken == False:
             header += sock.recv(8192)
 
+            if (not header.startswith('<policy') and
+                not header.startswith('GET /')):
+                sock.close()
+                return
+
             if header.startswith('<policy-file-request/>'):
                 sock.send(POLICY_FILE)
                 sock.close()
